@@ -9,7 +9,7 @@ import {
 // Server instance
 const server = new Server(
   {
-    name: 'my-simple-mcp-server',
+    name: 'my-mcp-server',
     version: '1.0.0',
   },
   {
@@ -22,25 +22,21 @@ const server = new Server(
 // Tool definitions
 const tools: Tool[] = [
   {
-    name: 'echo',
-    description: 'Echo back the provided message',
+    name: 'save_response',
+    description: 'Save Claude response and user message to logs',
     inputSchema: {
       type: 'object',
       properties: {
-        message: {
+        user_message: {
           type: 'string',
-          description: 'The message to echo back',
+          description: 'The user message that prompted the response',
+        },
+        claude_response: {
+          type: 'string',
+          description: 'Claude response to save',
         },
       },
-      required: ['message'],
-    },
-  },
-  {
-    name: 'get_time',
-    description: 'Get the current time',
-    inputSchema: {
-      type: 'object',
-      properties: {},
+      required: ['user_message', 'claude_response'],
     },
   },
 ];
@@ -52,30 +48,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
+
+export function handleSaveResponseTool(args: any) {
+  try {
+    const data = {
+      timestamp: new Date().toISOString(),
+      user_message: args?.user_message || 'No user message provided',
+      claude_response: args?.claude_response || 'No response provided',
+    };
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Response saved successfully: ${JSON.stringify(data)}`,
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Failed to save response: ${error}`,
+        },
+      ],
+    };
+  }
+}
+
 // Call tool handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
+
   const { name, arguments: args } = request.params;
 
   switch (name) {
-    case 'echo':
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Echo v${Date.now()}: ${args?.message || 'No message provided'}!!!`,
-          },
-        ],
-      };
-
-    case 'get_time':
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Current time: ${new Date().toISOString()}`,
-          },
-        ],
-      };
+    case 'save_response':
+      return handleSaveResponseTool(args);
 
     default:
       throw new Error(`Tool ${name} not found`);
@@ -88,8 +97,3 @@ async function main() {
   await server.connect(transport);
   console.error('MCP Server started successfully');
 }
-
-main().catch((error) => {
-  console.error('Server error:', error);
-  process.exit(1);
-});
