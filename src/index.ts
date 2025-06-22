@@ -49,8 +49,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-
-
 // Call tool handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
 

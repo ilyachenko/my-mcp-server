@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 export function handleSaveResponseTool(args: any) {
   try {
     if (!args?.user_message || !args?.claude_response) {
@@ -12,17 +15,23 @@ export function handleSaveResponseTool(args: any) {
       };
     }
 
-    const data = {
-      timestamp: new Date().toISOString(),
-      user_message: args.user_message,
-      claude_response: args.claude_response,
-    };
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `${timestamp}.txt`;
+    const dataDir = path.join(__dirname, '../../data');
+    const filePath = path.join(dataDir, filename);
+
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    const dialogContent = `User: ${args.user_message}\n\nAssistant: ${args.claude_response}`;
+    fs.writeFileSync(filePath, dialogContent);
 
     return {
       content: [
         {
           type: 'text',
-          text: `Response saved successfully: ${JSON.stringify(data)}`,
+          text: `Response saved successfully to ${filename}`,
         },
       ],
     };
