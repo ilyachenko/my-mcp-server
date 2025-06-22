@@ -6,6 +6,7 @@ import {
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
+import { handleReadLastFileTool } from './handlers/readLastFile.handler.js';
 
 // Server instance
 const server = new Server(
@@ -36,6 +37,14 @@ const tools: Tool[] = [
       required: ['claude_response'],
     },
   },
+  {
+    name: 'read_last_file',
+    description: 'Read the most recently saved file from data directory',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 // List tools handler
@@ -53,6 +62,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   switch (name) {
     case 'save_response':
       return handleSaveResponseTool(args);
+
+    case 'read_last_file':
+      return handleReadLastFileTool();
 
     default:
       throw new Error(`Tool ${name} not found`);
