@@ -24,20 +24,16 @@ const server = new Server(
 const tools: Tool[] = [
   {
     name: 'save_response',
-    description: 'Save Claude response and user message',
+    description: 'Save Claude response',
     inputSchema: {
       type: 'object',
       properties: {
-        user_message: {
-          type: 'string',
-          description: 'The user message that prompted the response',
-        },
         claude_response: {
           type: 'string',
           description: 'Claude response to save',
         },
       },
-      required: ['user_message', 'claude_response'],
+      required: ['claude_response'],
     },
   },
 ];
