@@ -7,6 +7,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
 import { handleReadRandomFromLast10Tool } from './handlers/readLastFile.handler.js';
+import { handleGrammarPracticeTool } from './handlers/grammarPractice.handler.js';
 
 // Server instance
 const server = new Server(
@@ -45,6 +46,20 @@ const tools: Tool[] = [
       properties: {},
     },
   },
+  {
+    name: 'grammar_practice',
+    description: 'Generate practice questions based on file content',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        file_content: {
+          type: 'string',
+          description: 'Content of the file to generate questions from',
+        },
+      },
+      required: ['file_content'],
+    },
+  },
 ];
 
 // List tools handler
@@ -65,6 +80,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     case 'read_random_from_last_10':
       return handleReadRandomFromLast10Tool();
+
+    case 'grammar_practice':
+      return handleGrammarPracticeTool(args);
 
     default:
       throw new Error(`Tool ${name} not found`);
