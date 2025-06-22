@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function handleReadLastFileTool() {
+export function handleReadRandomFromLast10Tool() {
   try {
     const dataDir = path.join(__dirname, '../../data');
     
@@ -24,7 +24,8 @@ export function handleReadLastFileTool() {
         path: path.join(dataDir, file),
         mtime: fs.statSync(path.join(dataDir, file)).mtime
       }))
-      .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+      .sort((a, b) => b.mtime.getTime() - a.mtime.getTime())
+      .slice(0, 10);
 
     if (files.length === 0) {
       return {
@@ -37,14 +38,15 @@ export function handleReadLastFileTool() {
       };
     }
 
-    const lastFile = files[0];
-    const content = fs.readFileSync(lastFile.path, 'utf8');
+    const randomIndex = Math.floor(Math.random() * files.length);
+    const randomFile = files[randomIndex];
+    const content = fs.readFileSync(randomFile.path, 'utf8');
 
     return {
       content: [
         {
           type: 'text',
-          text: `Last saved file: ${lastFile.name}\n\nContent:\n${content}`,
+          text: `Random file from last 10: ${randomFile.name}\n\nContent:\n${content}`,
         },
       ],
     };
@@ -53,7 +55,7 @@ export function handleReadLastFileTool() {
       content: [
         {
           type: 'text',
-          text: `Failed to read last file: ${error}`,
+          text: `Failed to read random file: ${error}`,
         },
       ],
       isError: true,

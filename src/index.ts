@@ -6,7 +6,7 @@ import {
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
-import { handleReadLastFileTool } from './handlers/readLastFile.handler.js';
+import { handleReadRandomFromLast10Tool } from './handlers/readLastFile.handler.js';
 
 // Server instance
 const server = new Server(
@@ -38,8 +38,8 @@ const tools: Tool[] = [
     },
   },
   {
-    name: 'read_last_file',
-    description: 'Read the most recently saved file from data directory',
+    name: 'read_random_from_last_10',
+    description: 'Read a random file from the last 10 saved files in data directory',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -63,8 +63,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     case 'save_response':
       return handleSaveResponseTool(args);
 
-    case 'read_last_file':
-      return handleReadLastFileTool();
+    case 'read_random_from_last_10':
+      return handleReadRandomFromLast10Tool();
 
     default:
       throw new Error(`Tool ${name} not found`);
