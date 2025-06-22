@@ -5,6 +5,7 @@ import {
   CallToolRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
+import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
 
 // Server instance
 const server = new Server(
@@ -49,33 +50,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 
-export function handleSaveResponseTool(args: any) {
-  try {
-    const data = {
-      timestamp: new Date().toISOString(),
-      user_message: args?.user_message || 'No user message provided',
-      claude_response: args?.claude_response || 'No response provided',
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `Response saved successfully: ${JSON.stringify(data)}`,
-        },
-      ],
-    };
-  } catch (error) {
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `Failed to save response: ${error}`,
-        },
-      ],
-    };
-  }
-}
 
 // Call tool handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -97,3 +71,5 @@ async function main() {
   await server.connect(transport);
   console.error('MCP Server started successfully');
 }
+
+main().catch(console.error);
