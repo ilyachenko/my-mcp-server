@@ -8,6 +8,7 @@ import {
 import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
 import { handleReadRandomFromLast10Tool } from './handlers/readLastFile.handler.js';
 import { handleGrammarPracticeTool } from './handlers/grammarPractice.handler.js';
+import { handleRemoveFileTool } from './handlers/removeFile.handler.js';
 
 // Server instance
 const server = new Server(
@@ -60,6 +61,20 @@ const tools: Tool[] = [
       required: ['file_content'],
     },
   },
+  {
+    name: 'remove_file',
+    description: 'Remove a specific file from the data directory',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        filename: {
+          type: 'string',
+          description: 'Name of the file to remove',
+        },
+      },
+      required: ['filename'],
+    },
+  },
 ];
 
 // List tools handler
@@ -83,6 +98,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     case 'grammar_practice':
       return handleGrammarPracticeTool(args);
+
+    case 'remove_file':
+      return handleRemoveFileTool(args);
 
     default:
       throw new Error(`Tool ${name} not found`);
