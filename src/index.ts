@@ -5,10 +5,6 @@ import {
   CallToolRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { handleSaveResponseTool } from './handlers/saveResponse.handler.js';
-import { handleReadRandomFromLast10Tool } from './handlers/readLastFile.handler.js';
-import { handleGrammarPracticeTool } from './handlers/grammarPractice.handler.js';
-import { handleRemoveFileTool } from './handlers/removeFile.handler.js';
 
 // Server instance
 const server = new Server(
@@ -24,58 +20,7 @@ const server = new Server(
 );
 
 // Tool definitions
-const tools: Tool[] = [
-  {
-    name: 'save_response',
-    description: 'Save Claude response',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        claude_response: {
-          type: 'string',
-          description: 'Claude response to save',
-        },
-      },
-      required: ['claude_response'],
-    },
-  },
-  {
-    name: 'read_random_from_last_10',
-    description: 'Read a random file from the last 10 saved files in data directory',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'grammar_practice',
-    description: 'Generate practice questions based on file content',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        file_content: {
-          type: 'string',
-          description: 'Content of the file to generate questions from',
-        },
-      },
-      required: ['file_content'],
-    },
-  },
-  {
-    name: 'remove_file',
-    description: 'Remove a specific file from the data directory',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        filename: {
-          type: 'string',
-          description: 'Name of the file to remove',
-        },
-      },
-      required: ['filename'],
-    },
-  },
-];
+const tools: Tool[] = [];
 
 // List tools handler
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -86,25 +31,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Call tool handler
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-
-  const { name, arguments: args } = request.params;
-
-  switch (name) {
-    case 'save_response':
-      return handleSaveResponseTool(args);
-
-    case 'read_random_from_last_10':
-      return handleReadRandomFromLast10Tool();
-
-    case 'grammar_practice':
-      return handleGrammarPracticeTool(args);
-
-    case 'remove_file':
-      return handleRemoveFileTool(args);
-
-    default:
-      throw new Error(`Tool ${name} not found`);
-  }
+  const { name } = request.params;
+  throw new Error(`Tool ${name} not found`);
 });
 
 // Start server
